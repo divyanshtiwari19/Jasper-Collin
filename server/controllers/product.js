@@ -3,8 +3,6 @@ const { default: mongoose, Schema } = require("mongoose");
 const ObjectId = Schema.Types.ObjectId;
 const { validationResult } = require("express-validator");
 
-
-
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();
