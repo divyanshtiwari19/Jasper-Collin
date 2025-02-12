@@ -1,5 +1,6 @@
 const { body } = require("express-validator");
 
+// Auth
 exports.validateRegister = [
   body("firstname")
     .trim()
@@ -28,4 +29,19 @@ exports.validateLogin = [
     .matches(/^[a-zA-Z0-9_]+$/)
     .withMessage("Username can only contain letters, numbers, and underscores"),
   body("password").notEmpty().withMessage("Password is required"),
+];
+
+// Product
+exports.validateProduct = [
+  body("name").trim().notEmpty().withMessage("Product name is required"),
+  body("description")
+    .trim()
+    .notEmpty()
+    .withMessage("Description is required")
+    .isLength({ min: 10 })
+    .withMessage("Description must be at least 10 characters"),
+  body("price")
+    .isFloat({ min: 0 })
+    .withMessage("Price must be a positive number"),
+  body("category").trim().notEmpty().withMessage("Category is required"),
 ];
