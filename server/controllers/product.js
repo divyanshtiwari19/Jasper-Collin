@@ -27,14 +27,7 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    let {
-      page = 1,
-      limit = 10,
-      category,
-      search,
-      sort,
-      order,
-    } = req.query;
+    let { page = 1, limit = 10, category, search, sort, order } = req.query;
 
     page = isNaN(page) || page < 1 ? 1 : parseInt(page);
     limit = isNaN(limit) || limit < 1 ? 10 : parseInt(limit);
