@@ -41,7 +41,7 @@ exports.validateProduct = [
     .isLength({ min: 10 })
     .withMessage("Description must be at least 10 characters"),
   body("price")
-    .isFloat({ min: 0 })
-    .withMessage("Price must be a positive number"),
+    .isFloat({ min: 1 })
+    .withMessage("Price must be a minimum 1"),
   body("category").trim().notEmpty().withMessage("Category is required"),
 ];

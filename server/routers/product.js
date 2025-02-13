@@ -11,8 +11,7 @@ const {
 const { validateProduct } = require("../validators/validators");
 const { requireSignIn } = require("../middleware/middleware");
 
-// router.post("/products", requireSignIn, validateProduct, createProduct);
-
+router.post("/products", requireSignIn, validateProduct, createProduct);
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductById);
 router.put("/products/:id", requireSignIn, validateProduct, updateProduct);

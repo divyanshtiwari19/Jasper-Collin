@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.requireSignIn = (req, res, next) => {
   try {
+    console.log(req.session, "req.session")
     if (!req.session || !req.session.token)
       return res.status(401).send({ error: "Not authorized." });
 
