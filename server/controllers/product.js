@@ -27,8 +27,86 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    let {
+      page = 1,
+      limit = 10,
+      category,
+      search,
+      sort,
+      order,
+    } = req.query;
+
+    page = isNaN(page) || page < 1 ? 1 : parseInt(page);
+    limit = isNaN(limit) || limit < 1 ? 10 : parseInt(limit);
+
+    const matchQuery = {};
+
+    if (category) matchQuery.category = category;
+
+    // Searching
+    if (search) {
+      matchQuery.$or = [
+        { name: { $regex: search, $options: "si" } },
+        { description: { $regex: search, $options: "si" } },
+        { price: { $regex: search, $options: "si" } },
+      ];
+    }
+
+    // sorting
+    let sortOptions = { createdAt: -1 };
+    if (sort) {
+      const sortField = sort;
+      const sortOrder = order === "asc" ? 1 : -1;
+      sortOptions = { [sortField]: sortOrder };
+    }
+
+    let pipeline = [
+      { $match: matchQuery },
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          category: [
+            { $group: { _id: null, categories: { $addToSet: "$category" } } },
+            { $project: { _id: 0, categories: 1 } },
+          ],
+          data: [
+            { $sort: sortOptions },
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                description: 1,
+                price: 1,
+                category: 1,
+                createdAt: 1,
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const results = await Product.aggregate(pipeline);
+
+    const totalProducts = results[0]?.totalCount?.length
+      ? results[0].totalCount[0].count
+      : 0;
+    const categories = results[0]?.category?.length
+      ? results[0].category[0].categories
+      : 0;
+    const products = results[0]?.data || [];
+
+    res.status(200).json({
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      hasNextPage: page < Math.ceil(totalProducts / limit),
+      hasPrevPage: page > 1,
+      res: products,
+      categories,
+    });
   } catch (error) {
     console.error("Get Products Error:", error);
     res.status(500).json({ message: "Server error" });
