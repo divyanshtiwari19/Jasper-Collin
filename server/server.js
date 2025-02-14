@@ -22,7 +22,7 @@ const startServer = async () => {
   app.use(express.json({ limit: "5mb" }));
   app.use(cookieParser());
   app.use(morgan("dev"));
-  // app.enable("trust proxy");
+  app.enable("trust proxy");
   app.use(mongoSanitize()); // I have added this to prevent -  NoSQL Injection Attacks
 
   app.use(
