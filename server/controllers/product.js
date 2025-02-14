@@ -27,10 +27,10 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    let { page = 1, limit = 10, category, search, sort, order } = req.query;
+    let { page = 1, limit = 8, category, search, sort, order } = req.query;
 
     page = isNaN(page) || page < 1 ? 1 : parseInt(page);
-    limit = isNaN(limit) || limit < 1 ? 10 : parseInt(limit);
+    limit = isNaN(limit) || limit < 1 ? 8 : parseInt(limit);
 
     const matchQuery = {};
 
@@ -54,15 +54,15 @@ exports.getAllProducts = async (req, res) => {
     }
 
     let pipeline = [
-      { $match: matchQuery },
       {
         $facet: {
-          totalCount: [{ $count: "count" }],
+          totalCount: [{ $match: matchQuery }, { $count: "count" }],
           category: [
             { $group: { _id: null, categories: { $addToSet: "$category" } } },
             { $project: { _id: 0, categories: 1 } },
           ],
           data: [
+            { $match: matchQuery },
             { $sort: sortOptions },
             { $skip: (page - 1) * limit },
             { $limit: limit },

@@ -55,7 +55,6 @@ exports.login = async (req, res) => {
 
     if (!user)
       return res.status(401).json({ message: "Invalid username or password" });
-    console.log(user, "user?.status");
     if (!user?.status)
       return res
         .status(403)

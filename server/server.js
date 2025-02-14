@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
-const csrf = require("csurf");
 const morgan = require("morgan");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -50,12 +49,6 @@ const startServer = async () => {
       }),
     })
   );
-
-  const csrfProtection = csrf({ cookie: true });
-  app.use(csrfProtection);
-  app.get("/api/csrf-token", (req, res) => {
-    res.json({ csrfToken: req.csrfToken() });
-  });
 
   // Rate Limiting (Prevents DDoS Attacks)
   const limiter = rateLimit({
